@@ -5,7 +5,7 @@ import { createAccesssToken } from '../libs/jwt.js';
 
 export const register = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, confirm_password } = req.body;
 
         //Validar si existe el usuario por email o username
 
@@ -16,6 +16,9 @@ export const register = async (req, res) => {
         const userFoundEmail = await User.findOne({ email });
 
         if (userFoundEmail) return res.status(400).json({ message: "Ya se registro un usuario con el correo actual" });
+
+        //Validar que las contraseñas sean iguales
+        if (password !== confirm_password) return res.status(400).json({ message: "Las contraseñas deben coinciden" });
 
         //Generar password encryptada
         const passwordHash = await bycript.hash(password, 10);
@@ -30,8 +33,8 @@ export const register = async (req, res) => {
         const userSaved = await newUser.save();
 
         //Crear token 
-        const token = await createAccesssToken({ id: userSaved._id });
-        res.cookie("token", token)
+        /*const token = await createAccesssToken({ id: userSaved._id });
+        res.cookie("token", token)*/
 
         res.status(201).json({
             id: userSaved._id,

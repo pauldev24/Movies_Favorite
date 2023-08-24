@@ -14,6 +14,9 @@ export const registerUserSchema = z.object({
     }).min(8, {
         message: 'Se requiere una contraseña de al menos 8 caracteres'
     }),
+    confirm_password: z.string({
+        required_error: 'La confirmacion de contraseña es requerida'
+    })
 });
 
 export const loginUserSchema = z.object({
