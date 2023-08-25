@@ -1,6 +1,5 @@
 
 import CardMovie from "./CardMovie"
-import PropTypes from 'prop-types'
 
 export const ListOfMovies = ({ movies, favorite }) => {
     return (
@@ -15,11 +14,11 @@ export const ListOfMovies = ({ movies, favorite }) => {
 
 export const NotFoundMovies = ({ favorite }) => {
     return (
-        <p>
+        <>
             {
                 (favorite) ? <p>No tienes peliculas favoritas añadidas</p> : <p>No se encontraron peliculas</p>
             }
-        </p>
+        </>
     )
 }
 
@@ -31,10 +30,5 @@ export const MoviesUI = ({ movies, favorite }) => {
             }
         </>
     )
-}
-
-MoviesUI.propTypes = {
-    movies: PropTypes.array.isRequired,
-    favorite: PropTypes.bool.isRequired
 }
 

@@ -41,3 +41,18 @@ export const updateMovie = async (req, res) => {
     }
 
 }
+
+export const getMovie = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        //Comprobar que existe la pelicula
+        const movieFound = await Movie.findById(id);
+
+        if (!movieFound) return res.status(400).json({ message: "No existe la pelicula" });
+
+        res.status(200).json({ movie: movieFound });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}

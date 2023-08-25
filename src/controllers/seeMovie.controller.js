@@ -5,7 +5,7 @@ import { createMovie } from "./movie.controller.js";
 
 export const createSeeMovieUser = async (req, res) => {
     try {
-        const { movie, state } = req.body;
+        const { movie, state, date_see } = req.body;
 
         if (!movie) return res.status(404).json({ message: "Debe enviar una pelicula" });
 
@@ -25,7 +25,8 @@ export const createSeeMovieUser = async (req, res) => {
             const newSeeMovieUser = new SeeMovieUser({
                 User: req.user.id,
                 Movie: movieSaved._id,
-                state
+                state,
+                date_see
             });
 
             const newSeeMovieUserCreate = await newSeeMovieUser.save();
@@ -42,7 +43,8 @@ export const createSeeMovieUser = async (req, res) => {
             const newSeeMovieUser = new SeeMovieUser({
                 User: req.user.id,
                 Movie: movie.id,
-                state
+                state,
+                date_see
             });
 
             const newSeeMovieUserCreate = await newSeeMovieUser.save();
@@ -58,12 +60,17 @@ export const updateSeeMovieUser = async (req, res) => {
         const { id } = req.params;
 
         //Encontrar pelicula que tenga el id de la pelicula y el id del usuario
-        const movieFound = await SeeMovieUser.findOne({ _id: id, User: req.user.id });
+        const movieFound = await SeeMovieUser.findOne({ Movie: id, User: req.user.id });
 
         if (!movieFound) res.status(204).json({ message: "No existe la pelicula en su lista" });
 
+        const id_seemovie = movieFound._id;
+
+        //Añadir al req.body el data_see de ahora
+        req.body.date_see = new Date();
+
         //Actualizar pelicula
-        const movieUpdate = await SeeMovieUser.findByIdAndUpdate(id, req.body, { new: true });
+        const movieUpdate = await SeeMovieUser.findByIdAndUpdate(id_seemovie, req.body, { new: true });
         res.status(200).json({ movie: { id: movieUpdate._id, date_see: movieUpdate.date_see, state: movieUpdate.state } });
     } catch (error) {
         res.status(500).json({ message: error.message });
