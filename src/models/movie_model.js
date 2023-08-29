@@ -7,7 +7,7 @@ const movieSchema = new mongoose.Schema(
             required: true,
         },
         year: {
-            type: Number,
+            type: String,
             required: true,
         },
         sinopsis: {
@@ -16,7 +16,7 @@ const movieSchema = new mongoose.Schema(
         },
         img_url: {
             type: String,
-            required: true,
+            required: false,
         },
         genero: {
             type: String,

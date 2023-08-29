@@ -81,6 +81,49 @@ export const logout = (req, res) => {
     res.status(200).json({ message: "Se ha cerrado la sesion" });
 }
 
+export const updateUser = async (req, res) => {
+    try {
+        const { id } = req.user;
+
+        if (req.body.password !== undefined) {
+            if (req.body.password !== req.body.confirm_password) return res.status(400).json({ message: "Las contraseñas deben coincidir" });
+            const passwordHash = await bycript.hash(req.body.password, 10);
+            req.body.password = passwordHash;
+        }
+
+        const userFound = await User.findById(id);
+
+        if (!userFound) return res.status(400).json({ message: "El usuario no existe" });
+
+        //Validar si las nuevas credenciales son las mismas que las anteriores
+        if (userFound.username === req.body.username) {
+            delete req.body.username;
+        }
+        if (userFound.email === req.body.email) {
+            delete req.body.email;
+        }
+
+        if (req.body.username !== undefined) {
+            //Verificar si el nombre de usuario ya existe
+            const usernameFound = await User.findOne({ username: req.body.username });
+            if (usernameFound) return res.status(400).json({ message: "El nombre de usuario ya existe" });
+        }
+
+        if (req.body.email !== undefined) {
+            //Verificar si el correo ya existe
+            const emailFound = await User.findOne({ email: req.body.email });
+            if (emailFound) return res.status(400).json({ message: "El correo ya existe" });
+        }
+
+        const updateUser = await User.findByIdAndUpdate(id, req.body, { new: true });
+
+        res.status(200).json({ message: "Usuario actualizado", user: { username: updateUser.username, email: updateUser.email } });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 export const deleteUsers = async (req, res) => {
     try {
         await User.deleteMany();
@@ -104,7 +147,7 @@ export const verifyToken = async (req, res) => {
 
             if (!userFound) return res.status(401).json({ message: "No Autorizado" })
 
-            res.status(200).json({ userFound })
+            res.status(200).json({ id: userFound._id, username: userFound.username, email: userFound.email })
         })
     } catch (error) {
         res.status(500).json({ message: error.message });

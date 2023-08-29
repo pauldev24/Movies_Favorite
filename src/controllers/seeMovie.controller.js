@@ -30,7 +30,8 @@ export const createSeeMovieUser = async (req, res) => {
             });
 
             const newSeeMovieUserCreate = await newSeeMovieUser.save();
-            return res.status(201).json({ message: "Se agrego " + movie.title + " a tu lista de peliculas", movie: { id: newSeeMovieUserCreate._id, state: newSeeMovieUserCreate.state } });
+            await newSeeMovieUserCreate.populate('Movie');
+            return res.status(201).json({ message: "Se agrego " + movie.title + " a tu lista de peliculas", movie: { Movie: newSeeMovieUserCreate.Movie, state: newSeeMovieUserCreate.state, date_see: (newSeeMovieUserCreate.date_see == undefined) ? null : newSeeMovieUserCreate.date_see } });
         } else {
             //Como existe la pelicula reemplazamos su id con el de la base de datos
             movie.id = movieFound._id;
@@ -48,7 +49,8 @@ export const createSeeMovieUser = async (req, res) => {
             });
 
             const newSeeMovieUserCreate = await newSeeMovieUser.save();
-            res.status(201).json({ message: "Se agrego " + movie.title + " a tu lista de peliculas", movie: { id: newSeeMovieUserCreate._id, state: newSeeMovieUserCreate.state } });
+            await newSeeMovieUserCreate.populate('Movie');
+            return res.status(201).json({ message: "Se agrego " + movie.title + " a tu lista de peliculas", movie: { Movie: newSeeMovieUserCreate.Movie, state: newSeeMovieUserCreate.state, date_see: (newSeeMovieUserCreate.date_see == undefined) ? null : newSeeMovieUserCreate.date_see } });
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -66,12 +68,14 @@ export const updateSeeMovieUser = async (req, res) => {
 
         const id_seemovie = movieFound._id;
 
-        //Añadir al req.body el data_see de ahora
-        req.body.date_see = new Date();
+        if (req.body.date_see === undefined) {
+            //Añadir al req.body el data_see de ahora
+            req.body.date_see = "";
+        }
 
         //Actualizar pelicula
         const movieUpdate = await SeeMovieUser.findByIdAndUpdate(id_seemovie, req.body, { new: true });
-        res.status(200).json({ movie: { id: movieUpdate._id, date_see: movieUpdate.date_see, state: movieUpdate.state } });
+        res.status(200).json({ message: "Lista actualizada", movie: movieUpdate });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -96,8 +100,11 @@ export const deleteSeeMovieUser = async (req, res) => {
     try {
         const { id } = req.params;
 
-        //Encontrar pelicula que tenga el id de la pelicula y el id del usuario
-        const movieDelete = await SeeMovieUser.findByIdAndDelete({ _id: id, User: req.user.id });
+        const movieFound = await SeeMovieUser.findOne({ Movie: id, User: req.user.id });
+
+        const id_seemovie = movieFound._id;
+        //Borrar pelicula del usuario
+        const movieDelete = await SeeMovieUser.findByIdAndDelete(id_seemovie);
 
         if (!movieDelete) res.status(204).json({ message: "No existe la pelicula en su lista" });
 

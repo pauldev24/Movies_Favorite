@@ -1,8 +1,10 @@
+import { URL_MOVIES_POSTER } from '../constants'
 
 function CardDetailMovie({movie}) {
+  const img_url = (movie.img_url == null) ? 'https://www.publicdomainpictures.net/pictures/280000/velka/not-found-image-15383864787lu.jpg' : `${URL_MOVIES_POSTER + movie.img_url}`
   return (
     <article className="flex justify-start items-start rounded-md shadow-md shadow-white sm:max-w-[100vh] m-auto hover:shadow-lg duration-300">
-       <img src={`${movie.img_url}`} alt="image detail image" className="max-w-[30vh] rounded-md"/>
+       <img src={`${img_url}`} alt="image detail image" className="max-w-[30vh] rounded-md"/>
        <section className="text-white px-4 py-2">
           <h1 className="text-center uppercase text-xl font-extrabold mb-3">
             {movie.title}

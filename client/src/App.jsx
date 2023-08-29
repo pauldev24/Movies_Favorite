@@ -18,8 +18,8 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <NavigationAuth />
         <MovieProvider>
+        <NavigationAuth />
           <Routes>
             <Route element={<PublicProtectedRoute />} >
               <Route path="/" element={<Home />} />

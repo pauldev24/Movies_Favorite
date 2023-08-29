@@ -27,3 +27,22 @@ export const loginUserSchema = z.object({
         message: 'Se requiere una contraseña de al menos 8 caracteres'
     }),
 });
+
+export const updateUserSchema = z.object({
+    username: z.string({
+        invalid_type_error: 'Escriba el nombre de usuario correctamente',
+    }).optional(),
+    email: z.string({
+        invalid_type_error: 'Escriba el correo correctamente',
+    }).email({
+        message: 'Ingrese un correo valido',
+    }).optional(),
+    password: z.string({
+        invalid_type_error: 'Escriba la contraseña correctamente',
+    }).min(8, {
+        message: 'Se requiere una contraseña de al menos 8 caracteres'
+    }).optional(),
+    confirm_password: z.string({
+        required_error: 'La confirmacion de contraseña es requerida'
+    }).optional(),
+})

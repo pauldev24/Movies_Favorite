@@ -3,7 +3,7 @@ import { createSeeMovieUser, deleteSeeMovieUser, deleteSeeMovieUserAll, getSeeMo
 import { authRequired } from '../middlewares/AuthorizationToken.js';
 import { validateSchema } from '../middlewares/validator.middleware.js';
 import { createSeeMovieSchema } from '../schemas/seeMovieSchema.js';
-import { getMovie } from '../controllers/movie.controller.js';
+import { getMovie, getMoviesApiSearch } from '../controllers/movie.controller.js';
 
 const movieRouter = Router();
 
@@ -13,6 +13,7 @@ movieRouter.post('/movies', authRequired, validateSchema(createSeeMovieSchema), 
 movieRouter.put('/movies/:id', authRequired, validateSchema(createSeeMovieSchema), updateSeeMovieUser);
 movieRouter.delete('/movies/:id', authRequired, deleteSeeMovieUser);
 movieRouter.delete('/movies', authRequired, deleteSeeMovieUserAll);
+movieRouter.get('/movies/search/:query', authRequired, getMoviesApiSearch);
 
 
 export default movieRouter;

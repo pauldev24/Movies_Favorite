@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { requestLogin, requestRegister, verifyAuth, requestLogout } from '../api/auth'
+import { requestLogin, requestRegister, verifyAuth, requestLogout, requestUpdateUser } from '../api/auth'
 import Cookies from 'js-cookie'
 
 export const AuthContext = createContext()
@@ -21,25 +21,26 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (user) => {
         try {
+            setLoading(true)
             const res = await requestLogin(user)
             setUser(res.data)
             setIsAuthenticated(true)
-            setLoading(false)
         } catch (error) {
             if (error.response != null) {
                 (error.response.data.message) ? setErrors([error.response.data.message]) : setErrors(error.response.data);
             } else {
                 setErrors([error.message])
             }
+        } finally {
             setLoading(false)
         }
     }
 
     const register = async (user) => {
         try {
+            setLoading(true)
             const res = await requestRegister(user);
             setUser(res.data)
-            setLoading(false)
             setSuccess("Registro exitoso");
         } catch (error) {
             if (error.response != null) {
@@ -47,21 +48,42 @@ export const AuthProvider = ({ children }) => {
             } else {
                 setErrors([error.message])
             }
+        } finally {
             setLoading(false)
         }
     }
 
     const logout = async () => {
         try {
+            setLoading(true)
             const res = await requestLogout()
             if (res.status === 200) {
                 Cookies.remove('token')
                 setIsAuthenticated(null)
                 setUser(null)
-                setLoading(false)
+                return true
             }
+            return false
         } catch (error) {
             setErrors(error.response.data)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const update = async (user) => {
+        try {
+            setLoading(true)
+            const res = await requestUpdateUser(user)
+            setUser(res.data.user)
+            setSuccess("Actualización exitosa")
+        } catch (error) {
+            if (error.response != null) {
+                (error.response.data.message) ? setErrors([error.response.data.message]) : setErrors(error.response.data)
+            } else {
+                setErrors([error.message])
+            }
+        } finally {
             setLoading(false)
         }
     }
@@ -86,6 +108,7 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         async function checkLogin() {
+            setLoading(true)
             const cookies = Cookies.get()
             if (!cookies.token) {
                 setIsAuthenticated(false)
@@ -94,6 +117,7 @@ export const AuthProvider = ({ children }) => {
                 return
             }
             try {
+                setLoading(true)
                 const res = await verifyAuth(cookies.token)
                 if (!res.data) {
                     setIsAuthenticated(false)
@@ -103,10 +127,10 @@ export const AuthProvider = ({ children }) => {
                 //Si existe un usuario y se guarda
                 setIsAuthenticated(true)
                 setUser(res.data)
-                setLoading(false)
             } catch (error) {
                 setIsAuthenticated(false)
                 setUser(null)
+            } finally {
                 setLoading(false)
             }
         }
@@ -114,7 +138,7 @@ export const AuthProvider = ({ children }) => {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ user, loading, setLoading, errors, isAuthenticated, login, register, success, logout }}>
+        <AuthContext.Provider value={{ user, loading, setLoading, errors, isAuthenticated, login, register, success, logout, update }}>
             {children}
         </AuthContext.Provider>
     )

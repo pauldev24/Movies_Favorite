@@ -7,3 +7,5 @@ export const requestLogin = (user) => axios.post(`login`, user);
 export const requestLogout = () => axios.post(`logout`);
 
 export const verifyAuth = () => axios.get(`verify`);
+
+export const requestUpdateUser = (user) => axios.put(`update`, user);
