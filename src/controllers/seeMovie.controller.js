@@ -2,6 +2,7 @@ import SeeMovieUser from "../models/see_movie_user_model.js";
 import User from "../models/user_model.js";
 import Movie from "../models/movie_model.js";
 import { createMovie } from "./movie.controller.js";
+import { GENERES } from "../constants.js";
 
 export const createSeeMovieUser = async (req, res) => {
     try {
@@ -90,7 +91,20 @@ export const getSeeMovieUser = async (req, res) => {
 
         if (movies.length === 0) return res.status(404).json({ message: "No tiene peliculas en su lista" });
 
-        res.status(200).json({ movies });
+        const moviesUser = movies.map((movie) => {
+            return {
+                _id: movie._id,
+                User: movie.User,
+                Movie: {
+                    ...movie.Movie._doc,
+                    genero: movie.Movie._doc.genero.map((id) => {
+                        return GENERES.find((genero) => genero.id === id)?.name
+                    }),
+                },
+            }
+        })
+
+        res.status(200).json({ movies: moviesUser });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

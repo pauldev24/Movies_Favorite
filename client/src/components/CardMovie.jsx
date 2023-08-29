@@ -43,9 +43,15 @@ export function CardMovie({ movie }) {
             }
           </span>
         </section>
-        <section className='flex justify-between'>
-          <span>Genero:</span>
-          <p>{movie.genero}</p>
+        <section className='flex flex-col gap-2 items-center my-2'>
+          <ul className="flex justify-center gap-3 flex-wrap">
+            {movie.genero.map((genero, index) => (
+                <li key={index} className="py-1 px-2 bg-violet-700 rounded-lg">
+                  {genero}
+                </li>
+            ))
+            }
+          </ul>
         </section>
         <section className='flex justify-between'>
           <span>Visto:</span>
