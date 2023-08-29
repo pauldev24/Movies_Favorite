@@ -95,6 +95,8 @@ export const getSeeMovieUser = async (req, res) => {
             return {
                 _id: movie._id,
                 User: movie.User,
+                state: movie.state,
+                date_see: movie.date_see,
                 Movie: {
                     ...movie.Movie._doc,
                     genero: movie.Movie._doc.genero.map((id) => {
