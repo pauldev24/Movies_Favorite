@@ -23,6 +23,7 @@ export const MovieProvider = ({children}) => {
     try{
         setLoading(true)
         const res = await requestGetMovies()
+        console.log(res.data.movies);
         const movies = res.data.movies?.map((movie) => {
             return {
                 id: movie.Movie._id,
