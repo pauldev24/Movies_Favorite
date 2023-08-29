@@ -2,6 +2,7 @@ import { URL_MOVIES_SEARCH } from '../config.js';
 import SeeMovieUser from "../models/see_movie_user_model.js";
 import { GENERES } from '../constants.js';
 import Movie from '../models/movie_model.js';
+import fetch from 'node-fetch';
 
 export const createMovie = async ({ movie }) => {
     try {
