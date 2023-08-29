@@ -18,12 +18,14 @@ export function Movie({ movie }) {
           "year":movie.year,
           "img_url":movie.img_url,
           "sinopsis":movie.sinopsis,
-          "genero":"Animacion",
+          "genero":movie.genero_ids,
       }
     })
+    console.log(movie);
     if(res != null && res.status === 201) {
       setFavorite(true)
     }
+    console.log(movie);
 
   }
 

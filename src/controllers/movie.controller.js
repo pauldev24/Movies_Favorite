@@ -55,7 +55,14 @@ export const getMovie = async (req, res) => {
 
         if (!movieFound) return res.status(400).json({ message: "No existe la pelicula" });
 
-        res.status(200).json({ movie: movieFound });
+        const movieReturn = {
+            ...movieFound._doc,
+            genero: movieFound._doc.genero.map((id) => {
+                return GENERES.find((genero) => genero.id === id)?.name
+            }),
+        }
+
+        res.status(200).json({ movie: movieReturn });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -75,9 +82,10 @@ export const getMoviesApiSearch = async (req, res) => {
                         year: movie.release_date,
                         sinopsis: movie.overview,
                         img_url: movie.poster_path,
+                        genero_ids: movie.genre_ids,
                         genero: movie.genre_ids.map((id) => {
                             return GENERES.find((genero) => genero.id === id)?.name
-                        })
+                        }),
                     }
                 })
                 // Obtener las películas favoritas del usuario

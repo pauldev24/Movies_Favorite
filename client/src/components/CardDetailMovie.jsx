@@ -16,7 +16,17 @@ function CardDetailMovie({movie}) {
             </li>
             <li>
             <span className="text-violet-800 font-bold text-md">
-              Género :</span> {movie.genero}
+              Género :</span> 
+              <section className='flex flex-col gap-2 my-2'>
+                <ul className="flex justify-center gap-3 flex-wrap">
+                  {movie.genero.map((genero, index) => (
+                      <li key={index} className="py-1 px-2 bg-violet-700 rounded-lg">
+                        {genero}
+                      </li>
+                  ))
+                  }
+                </ul>
+              </section>
             </li>
             <li>
             <span className="text-violet-800 font-bold text-md">
