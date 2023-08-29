@@ -2,6 +2,8 @@ import User from '../models/user_model.js';
 import Movie from '../models/movie_model.js';
 import bycript from 'bcryptjs';
 import { createAccesssToken } from '../libs/jwt.js';
+import jwt from 'jsonwebtoken';
+import { TOKEN_SECRET } from '../config.js';
 
 export const register = async (req, res) => {
     try {
@@ -84,6 +86,26 @@ export const deleteUsers = async (req, res) => {
         await User.deleteMany();
         await Movie.deleteMany();
         res.status(200).json({ message: "Se han eliminado todos los usuarios" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export const verifyToken = async (req, res) => {
+    try {
+        const { token } = req.cookies
+
+        if (!token) return res.status(401).json({ message: "No Autorizado" })
+
+        jwt.verify(token, TOKEN_SECRET, async (err, user) => {
+            if (err) return res.status(401).json({ message: "No Autorizado" })
+
+            const userFound = await User.findById(user.id)
+
+            if (!userFound) return res.status(401).json({ message: "No Autorizado" })
+
+            res.status(200).json({ userFound })
+        })
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
